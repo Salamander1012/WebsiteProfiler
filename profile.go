@@ -27,16 +27,11 @@ func handleProfile(url url.URL, profileSize int) {
 	codes := make(map[int]int)
 	timeSum := 0
 
-	requestJobs := make(chan int, profileSize)
 	results := make(chan Stat, profileSize)
 
-	go performRequestJob(url, requestJobs, results)
-	go performRequestJob(url, requestJobs, results)
-
 	for i := 0; i < profileSize; i++ {
-		requestJobs <- i
+		go performRequestJob(url, results)
 	}
-	close(requestJobs)
 
 	for i := 0; i < profileSize; i++ {
 		stat := <-results
@@ -96,27 +91,24 @@ func handlePrintResponse(url url.URL) {
 	fmt.Printf("%s", resp)
 }
 
-func performRequestJob(url url.URL, requestJobs chan int, results chan Stat) {
-	for range requestJobs {
-		start := time.Now()
-		resp, code := performRequest(url)
-		duration := time.Since(start)
-		stat := Stat{code: code, time: int(duration.Milliseconds()), size: len(resp)}
-		results <- stat
-	}
+func performRequestJob(url url.URL, results chan Stat) {
+	start := time.Now()
+	resp, code := performRequest(url)
+	duration := time.Since(start)
+	stat := Stat{code: code, time: int(duration.Milliseconds()), size: len(resp)}
+	results <- stat
 }
 
-func performRequest(url url.URL) (r string, c int) {
+func performRequest(url url.URL) (r []byte, c int) {
 	timeout := time.Second * 5
-
 	dialer := net.Dialer{
 		Timeout: timeout,
 	}
-
 	conn, err := tls.DialWithDialer(&dialer, "tcp", url.Hostname()+":https", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer conn.Close()
 
 	conn.Write([]byte("GET " + url.Path + " HTTP/1.0\r\nHost: " + url.Hostname() + "\r\n\r\n"))
@@ -144,6 +136,6 @@ func performRequest(url url.URL) (r string, c int) {
 		}
 		return performRequest(*redirectURL)
 	} else {
-		return response, code
+		return resp, code
 	}
 }
