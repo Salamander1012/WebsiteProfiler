@@ -26,7 +26,6 @@ func handleProfile(url url.URL, profileSize int) {
 	maxSize := 0
 	codes := make(map[int]int)
 	timeSum := 0
-
 	results := make(chan Stat, profileSize)
 
 	for i := 0; i < profileSize; i++ {
@@ -64,7 +63,7 @@ func handleProfile(url url.URL, profileSize int) {
 	fmt.Println("Error codes:")
 	for k, v := range codes {
 		if k != 200 {
-			fmt.Printf("    %d occurence: %d\n", k, v)
+			fmt.Printf("\t%d occurence: %d\n", k, v)
 		}
 	}
 	fmt.Printf("Size of smallest response : %d bytes\n", minSize)
