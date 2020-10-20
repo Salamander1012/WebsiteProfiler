@@ -100,19 +100,23 @@ func performRequestJob(url url.URL, results chan Stat) {
 }
 
 func performRequest(url url.URL) (r []byte, c int) {
+	// Set up Dialer
 	timeout := time.Second * 5
 	dialer := net.Dialer{
 		Timeout: timeout,
 	}
+
+	// Establish connection
 	conn, err := tls.DialWithDialer(&dialer, "tcp", url.Hostname()+":https", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	defer conn.Close()
 
+	// Send GET request
 	conn.Write([]byte("GET " + url.Path + " HTTP/1.0\r\nHost: " + url.Hostname() + "\r\n\r\n"))
 
+	// Read Response
 	resp, err := ioutil.ReadAll(conn)
 	response := string(resp)
 	if err != nil {
@@ -124,6 +128,7 @@ func performRequest(url url.URL) (r []byte, c int) {
 	}
 	conn.Close()
 
+	// Check for status code 301/302. Redirect to new url if new location is provided.
 	if code > 300 && code < 400 {
 		// get redirect url
 		searchTerm := "Location: "
