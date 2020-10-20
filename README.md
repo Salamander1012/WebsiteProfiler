@@ -23,6 +23,8 @@ You can also see usage instructions
 
 ## Results
 
+Cloudflare is fast!
+
 ### Google
 
 ![google](https://github.com/Salamander1012/WebsiteProfiler/blob/main/results/google.png)
