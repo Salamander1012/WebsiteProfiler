@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	// Set up CLI
 	app := &cli.App{
 		Name:  "sitestat",
 		Usage: "A cli to test http requests to a website",
@@ -42,6 +43,7 @@ func main() {
 		},
 	}
 
+	// Run CLI
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
