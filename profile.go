@@ -52,6 +52,7 @@ func handleProfile(url url.URL, profileSize int) {
 		median += times[profileSize/2-1]
 		median /= 2
 	}
+	successPercentage := (float64(codes[200])) / (float64(profileSize)) * 100
 
 	fmt.Println("--------------Profile--------------")
 	fmt.Printf("Number of requests: %d\n", profileSize)
@@ -59,7 +60,7 @@ func handleProfile(url url.URL, profileSize int) {
 	fmt.Printf("Slowest request: %d miliseconds\n", times[len(times)-1])
 	fmt.Printf("Avg request time: %f miliseconds\n", avg)
 	fmt.Printf("Median request time: %d miliseconds\n", median)
-	fmt.Printf("Percentage of successful requests: %d\n", profileSize)
+	fmt.Println("Percentage of successful requests: ", successPercentage)
 	fmt.Println("Error codes:")
 	for k, v := range codes {
 		if k != 200 {
